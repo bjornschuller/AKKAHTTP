@@ -18,5 +18,3 @@ libraryDependencies ++= {
         "org.scalatest"       %%  "scalatest"                            % scalaTestV % "test"
       )
     }
-
-///

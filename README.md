@@ -12,6 +12,9 @@ Akka-http is based on Akka and like everything dependend on this library it need
 
 Moreover, there is another 'Core Service' needed and that is an Materializer. Like Actor needs the ActorSystem - Flows needs a Materializer to operate. But what is Flow? Flow is a part of Akka-Stream, and in short: Flow is a pipe for transporting data;
 
+Thirdly, an ExecutionContext is needed. 
+
+
 
 
 

@@ -16,14 +16,13 @@ trait AkkaHttpRoute extends CoreServices with JsonMarshallers{
   implicit val mat: Materializer
   implicit val ec: ExecutionContext
 
-
   // TODO implement some functionality inside the route
   val route: Route =
     path("order") {
       post {
         entity(as[Order]) {
           order =>
-              system.log.info(s"unmarshalled request to $order")
+              system.log.info(s"Unmarshalled the incoming request to $order, done by entity(as[Order])")
             complete {
               StatusCodes.OK -> order.toString
             }

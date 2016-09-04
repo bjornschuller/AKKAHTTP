@@ -87,15 +87,6 @@ binary encoding to a custom type like Order (i.e., case class).
 The unmarshalling infrastructure of Akka HTTP relies on a type-class based approach, which means that Unmarshaller
 instances from a certain type A to a certain type B have to be available implicitly.
 
-Akka HTTP also predefines a number of helpful aliases for the types of unmarshallers that you'll likely work with most:
-1. type FromEntityUnmarshaller[T] = Unmarshaller[HttpEntity, T]
-2. type FromMessageUnmarshaller[T] = Unmarshaller[HttpMessage, T]
-3. type FromResponseUnmarshaller[T] = Unmarshaller[HttpResponse, T]
-4. type FromRequestUnmarshaller[T] = Unmarshaller[HttpRequest, T]
-5. type FromStringUnmarshaller[T] = Unmarshaller[String, T]
-6. type FromStrictFormFieldUnmarshaller[T] = Unmarshaller[StrictForm.Field, T]
-
-
 
 **SOURCES**
 

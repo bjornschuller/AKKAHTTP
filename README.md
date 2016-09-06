@@ -87,8 +87,57 @@ binary encoding to a custom type like Order (i.e., case class).
 The unmarshalling infrastructure of Akka HTTP relies on a type-class based approach, which means that Unmarshaller
 instances from a certain type A to a certain type B have to be available implicitly.
 
+#5. JSON Support
+Akka HTTP's marshalling and unmarshalling infrastructure makes it rather easy to seamlessly support specific wire
+representations of your data objects, like JSON, XML or even binary encodings.
+For JSON Akka HTTP currently provides support for spray-json right out of the box through it's akka-http-spray-json module.
+
+The SprayJsonSupport trait provides a FromEntityUnmarshaller[T] & ToEntityMarshaller[T] for every type T that
+an implicit spray.json.RootJsonReader and/or spray.json.RootJsonWriter (respectively) is available for.
+
+This is how you enable automatic support for (un)marshalling from and to JSON with spray-json:
+
+1. Add the following library in your build.sbt --> "com.typesafe.akka" %% "akka-http-spray-json-experimental" % "2.4.8".
+2. import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._ or mix in the akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport trait for instance like this: trait JsonMarshallers extends DefaultJsonProtocol with SprayJsonSupport
+3. Provide a RootJsonFormat[T] for your type and bring it into scope. For intance like this:
+
+	  **implicit val orderJsonFormat = jsonFormat4(Order)**
+	   
+      **implicit val itemResponseJsonFormat = jsonFormat1(ItemResponse)**
+
+Once you have done this (un)marshalling between JSON and your type T should work nicely and transparently.
+
+#XML Support
+For XML Akka HTTP currently provides support for Scala XML right out of the box through it's akka-http-xml module.
+
+The ScalaXmlSupport trait provides a FromEntityUnmarshaller[NodeSeq] & ToEntityMarshaller[NodeSeq] that you can use directly or build upon.
+
+This is how you enable support for (un)marshalling from and to JSON with Scala XML NodeSeq:
+
+1. Add a library dependency into your build.sbt "com.typesafe.akka" %% "akka-http-xml-experimental" % "1.x".
+2. import akka.http.scaladsl.marshallers.xml.ScalaXmlSupport._ or mix in the akka.http.scaladsl.marshallers.xml.ScalaXmlSupport trait, for instance like this: trait XmlMarshallers extends ScalaXmlSupport 
+
+
+Once you have done this (un)marshalling between XML and NodeSeq instances should work nicely and transparently. However, they still need to be in scope!
 
 **SOURCES**
+http://doc.akka.io/docs/akka/2.4.8/scala.html --> AKKAHTTP
+
+- Akka HTTP 		DONE
+- Introduction		DONE
+- Configuration 	DONE
+-  Common Abstractions (Client- and Server-Side) DONE
+-  Implications of the streaming nature of Request/Response Entities
+-  Low-Level Server-Side API
+-  High-level Server-Side API
+-  Consuming HTTP-based Services (Client-Side)
+-  Server-Side HTTPS Support
+-  Handling blocking operations in Akka HTTP
+-  Migration Guide from Spray
+-  Migration Guide from "old" HTTP JavaDSL
+-  Migration Guide between experimental builds of Akka HTTP (2.4.x)
+
+
 
 http://doc.akka.io/docs/akka/2.4.8/scala/http/
 http://doc.akka.io/japi/akka-stream-and-http-experimental/2.0/akka/http/javadsl/Http.html

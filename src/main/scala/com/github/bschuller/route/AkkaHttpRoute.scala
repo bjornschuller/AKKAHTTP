@@ -6,11 +6,11 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.Materializer
 import com.github.bschuller.domain.{ItemResponse, Order}
-import com.github.bschuller.{CoreServices, JsonMarshallers}
+import com.github.bschuller.{CoreServices, Marshallers}
 
 import scala.concurrent.ExecutionContext
 
-trait AkkaHttpRoute extends CoreServices with JsonMarshallers{
+trait AkkaHttpRoute extends CoreServices with Marshallers{
 
   implicit val system: ActorSystem
   implicit val mat: Materializer
@@ -24,7 +24,7 @@ trait AkkaHttpRoute extends CoreServices with JsonMarshallers{
           order =>
               system.log.info(s"Unmarshalled the incoming request to $order, done by entity(as[Order])")
             complete {
-              StatusCodes.OK -> order.toString
+              StatusCodes.OK -> ItemResponse(s"Accepted the order: ${order.name}")
             }
         }
       }

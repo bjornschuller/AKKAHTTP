@@ -4,6 +4,11 @@ Akka HTTP will merely be used for the HTTP integration needs.
 
 Mind that akka-http comes in two modules: akka-http-experimental and akka-http-core. Because akka-http-experimental depends on akka-http-core you don't need to bring the latter explicitly. Still you may need to this in case you rely solely on low-level API.
 
+#Akka HTTP Stream Interfaces
+**HTTP CLIENT SIDE** (from your app to other app) ==> is a function where you stuck in requests and get out responses. (HttpRequest, HttpResponse, HttpEntity)
+
+**HTTP SERVER SIDE** (other app to your app) ==> is more or less a function that turns request into responses. (Server-side routing DSL) 
+
 #Webserver
 You start with creating a webserver. A new HTTP server can be launched using the Http() class.
 The bindAndHandle() method starts a new HTTP server at the given endpoint and uses the given handler (i.e., the akka http route) Flow
@@ -121,7 +126,7 @@ This is how you enable support for (un)marshalling from and to JSON with Scala X
 Once you have done this (un)marshalling between XML and NodeSeq instances should work nicely and transparently. However, they still need to be in scope!
 
 **SOURCES**
-http://doc.akka.io/docs/akka/2.4.8/scala.html --> AKKAHTTP
+	 --> AKKAHTTP
 
 - Akka HTTP 		DONE
 - Introduction		DONE
@@ -144,3 +149,5 @@ http://doc.akka.io/japi/akka-stream-and-http-experimental/2.0/akka/http/javadsl/
 
 http://blog.scalac.io/2015/07/30/websockets-server-with-akka-http.html
 http://doc.akka.io/docs/akka/2.4.9-RC1/scala/http/routing-dsl/testkit.html#route-testkit
+
+https://www.youtube.com/watch?v=y_slPbktLr0

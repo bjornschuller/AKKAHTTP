@@ -6,8 +6,8 @@ fork in Test := true
 (parallelExecution in Test) := false
 
 libraryDependencies ++= {
-      val akkaV       = "2.4.8"
-      val scalaTestV  = "2.2.5"
+      val akkaV       = "2.4.10"
+      val scalaTestV  = "3.0.0"
       Seq(
         "com.typesafe.akka"   %%  "akka-actor"                           % akkaV,
         "com.typesafe.akka"   %%  "akka-stream"             		         % akkaV,

@@ -1,8 +1,9 @@
 
-The Akka HTTP modules implement a full server- and client-side HTTP stack on top of akka-actor and akka-stream. It is a general toolkit for providing and consuming HTTP-based services. 
-Akka HTTP will merely be used for the HTTP integration needs.
+# AKKA HTTP INTRO
+The Akka HTTP modules implement a full server- and client-side HTTP stack on top of akka-actor and akka-stream. It is a general toolkit for providing and consuming HTTP-based services.  Akka HTTP will merely be used for the HTTP integration needs.
 
 Mind that akka-http comes in two modules: akka-http-experimental and akka-http-core. Because akka-http-experimental depends on akka-http-core you don't need to bring the latter explicitly. Still you may need to this in case you rely solely on low-level API.
+
 
 #Akka HTTP Stream Interfaces
 **HTTP CLIENT SIDE** (from your app to other app) ==> is a function where you stuck in requests and get out responses. (HttpRequest, HttpResponse, HttpEntity)
@@ -125,24 +126,37 @@ This is how you enable support for (un)marshalling from and to JSON with Scala X
 
 Once you have done this (un)marshalling between XML and NodeSeq instances should work nicely and transparently. However, they still need to be in scope!
 
+#AKKA HTTP AND AKKA STREAMS
+Since Akka HTTP is a library built on top of Akka Streams it offers the possibility to expose an incoming connection in the form of a Source instance: applying backpressure on this Source will make Akka HTTP stop consuming data from the network: in due time this will lead to a 0 TCP window, effectively applying the backpressure on the sending party itself. Example of an AKKA HTTP route that implements streams is presented below:
+
+```
+val route =
+  path("data") {
+    post {
+     extractRequest { request =>
+
+       val source = request.entity.dataBytes
+       val flow = processing()
+       val sink = Sink.ignore
+
+       source.via(flow).runWith(sink)
+
+      // more stuff here
+
+    }
+  }
+  
+  // example taken from: 
+  // http://www.measurence.com/tech-blog/2016/06/01/a-dive-into-akka-streams.html
+```
+There are four things that should be noted in the above code:
+
+- the source is extracted from the request.
+- Akka Streams provide simple **Sources** and **Sinks** that can work with **ByteString instances to perform operations on**. There the following line is used: ```request.entity.dataBytes```. The content of a ByteString is a sequence of bytes instead of characters. You can use the "utf8String" method to decodes this ByteString as a UTF-8 encoded String.
+- the flow should containt the application logic
+- the Sink just ignores everything because this way you can  keep all the logic in the form of a flow (it’s easier to test) so that the only task for the sink is to start the pulling.
+
 **SOURCES**
-	 --> AKKAHTTP
-
-- Akka HTTP 		DONE
-- Introduction		DONE
-- Configuration 	DONE
--  Common Abstractions (Client- and Server-Side) DONE
--  Implications of the streaming nature of Request/Response Entities
--  Low-Level Server-Side API
--  High-level Server-Side API
--  Consuming HTTP-based Services (Client-Side)
--  Server-Side HTTPS Support
--  Handling blocking operations in Akka HTTP
--  Migration Guide from Spray
--  Migration Guide from "old" HTTP JavaDSL
--  Migration Guide between experimental builds of Akka HTTP (2.4.x)
-
-
 
 http://doc.akka.io/docs/akka/2.4.8/scala/http/
 http://doc.akka.io/japi/akka-stream-and-http-experimental/2.0/akka/http/javadsl/Http.html
@@ -151,3 +165,5 @@ http://blog.scalac.io/2015/07/30/websockets-server-with-akka-http.html
 http://doc.akka.io/docs/akka/2.4.9-RC1/scala/http/routing-dsl/testkit.html#route-testkit
 
 https://www.youtube.com/watch?v=y_slPbktLr0
+
+http://www.measurence.com/tech-blog/2016/06/01/a-dive-into-akka-streams.html

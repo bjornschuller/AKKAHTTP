@@ -4,7 +4,7 @@ import com.github.bschuller.domain.Order
 class XmlMarshallAndUnmarshallTest extends TestSpec with Marshallers with Unmarshallers{
 
   "1. The xml marshaller and unmarshaller" should {
-    "should successfully apply the marshalling and unmarshalling of an order " in {
+    "successfully apply the marshalling and unmarshalling of an order " in {
 
       val order = new Order("Levi Jeans", "Jeans", "$200,00", 4)
 

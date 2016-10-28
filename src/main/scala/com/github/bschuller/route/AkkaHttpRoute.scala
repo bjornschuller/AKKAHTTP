@@ -1,9 +1,10 @@
 package com.github.bschuller.route
 
 import akka.actor.ActorSystem
+import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.server.{ExceptionHandler, Route}
 import akka.stream.Materializer
 import com.github.bschuller.domain.Order
 import com.github.bschuller.{CoreServices, Marshallers, Unmarshallers}
@@ -19,7 +20,16 @@ trait AkkaHttpRoute extends CoreServices with Marshallers with Unmarshallers{
   implicit val mat: Materializer
   implicit val ec: ExecutionContext
 
-  // TODO implement some functionality inside the route
+  val routeExceptionHandler: ExceptionHandler = {
+    ExceptionHandler {
+      case ex: java.lang.NumberFormatException =>
+        extractUri { uri =>
+          system.log.info(s"Request to $uri could not be handled normally because an exception occurred ${ex}")
+          complete(StatusCodes.BadRequest -> "Number formate exception occurred")
+      }
+    }
+  }
+
   val route: Route =
     path("json"/"order") {
       post {
@@ -34,18 +44,19 @@ trait AkkaHttpRoute extends CoreServices with Marshallers with Unmarshallers{
       }
     } ~
     path("xml"/"order") {
+      handleExceptions(routeExceptionHandler) {
         post {
           entity(as[NodeSeq]) {
             orderXml =>
-              system.log.info(s"The incoming request is fully consumed")
-              val order = nodeSeqToOrder(orderXml)
-              system.log.info(s"Executed method 'nodeSeqToOrder(orderXml)' to unmarshall nodeSeq to an Order => $order")
               complete {
+                system.log.info(s"The incoming request is fully consumed")
+                val order = nodeSeqToOrder(orderXml)
                 StatusCodes.OK -> s"Accepted the order: ${order.name}"
               }
           }
         }
-      } ~
+      }
+    } ~
     get{
       pathPrefix("item" / LongNumber){ id =>
         system.log.info(s"doing a get for $id")

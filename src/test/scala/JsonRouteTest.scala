@@ -10,7 +10,7 @@ import spray.json._
 /*
 See: https://github.com/spray/spray-json how to convert json to Object and the other way around
  */
-class RouteTest extends WordSpec with Matchers with ScalatestRouteTest with Marshallers {
+class JsonRouteTest extends TestSpec with Marshallers {
 
 
   val httpRoute = new AkkaHttpRoute {}
@@ -22,16 +22,17 @@ class RouteTest extends WordSpec with Matchers with ScalatestRouteTest with Mars
   "1. The service" should {
     "return a StatusCode OK for POST requests to the order path where the MediaTypes is set to JSON, " +
       "since the endpoint can only marshal Json at this moment..." in {
-      Post("/order", testOrder).withHeaders(AcceptJson) ~> httpRoute.route ~> check {
+      Post("/json/order", testOrder).withHeaders(AcceptJson) ~> httpRoute.route ~> check {
         response.status shouldBe StatusCodes.OK
         response.entity.contentType shouldBe ContentTypes.`application/json`
-        responseAs[String] shouldEqual "Accepted the order: Nike Air Force One"  //TODO FIX?
+        responseAs[String] shouldEqual """"Accepted the order: Nike Air Force One""""
       }
     }
+  }
 
     "2. The service" should {
-      "*reject* requests for application/xml since the endpoint can only marshal Json at this moment and no XML..." in {
-        Post("/order", testOrder).withHeaders(AcceptXml) ~> httpRoute.route ~> check {
+      "*reject* requests for application/xml since the endpoint can only marshal Json and no XML..." in {
+        Post("/json/order", testOrder).withHeaders(AcceptXml) ~> httpRoute.route ~> check {
           handled should ===(false)
           rejection should ===(UnacceptedResponseContentTypeRejection(Set(ContentTypes.`application/json`)))
 
@@ -48,5 +49,5 @@ class RouteTest extends WordSpec with Matchers with ScalatestRouteTest with Mars
         }
       }
     }
-  }
+
 }

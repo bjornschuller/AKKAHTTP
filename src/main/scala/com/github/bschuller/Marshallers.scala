@@ -11,22 +11,14 @@ trait Marshallers extends DefaultJsonProtocol with SprayJsonSupport with ScalaXm
 
   implicit val orderJsonFormat = jsonFormat4(Order)
 
-  // TODO fix it for xml
-//  def marshalOrder2Xml(order: Order): NodeSeq =
-//    <order>
-//      <name>
-//        { order.name }
-//      </name>
-//      <productType>
-//        { order.productType }
-//      </productType>
-//      <price>
-//        { order.price }
-//      </price>
-//      <quantity>
-//        { order.quantity }
-//      </quantity>
-//    </order>
+  def marshalOrder2Xml(order: Order): NodeSeq = {
+    <order>
+      <name>{order.name}</name>
+      <productType>{order.productType}</productType>
+      <price>{order.price}</price>
+      <quantity>{order.quantity}</quantity>
+    </order>
+  }
 
 }
 

@@ -6,12 +6,14 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.stream.Materializer
 import com.github.bschuller.domain.Order
-import com.github.bschuller.{CoreServices, Marshallers}
+import com.github.bschuller.{CoreServices, Marshallers, Unmarshallers}
 
 import scala.concurrent.ExecutionContext
-import spray.json._ // mandatory to use toJson
+import spray.json._
 
-trait AkkaHttpRoute extends CoreServices with Marshallers{
+import scala.xml.NodeSeq // mandatory to use toJson
+
+trait AkkaHttpRoute extends CoreServices with Marshallers with Unmarshallers{
 
   implicit val system: ActorSystem
   implicit val mat: Materializer
@@ -19,7 +21,7 @@ trait AkkaHttpRoute extends CoreServices with Marshallers{
 
   // TODO implement some functionality inside the route
   val route: Route =
-    path("order") {
+    path("json"/"order") {
       post {
         entity(as[Order]) {
           order =>
@@ -31,6 +33,19 @@ trait AkkaHttpRoute extends CoreServices with Marshallers{
         }
       }
     } ~
+    path("xml"/"order") {
+        post {
+          entity(as[NodeSeq]) {
+            orderXml =>
+              system.log.info(s"The incoming request is fully consumed")
+              val order = nodeSeqToOrder(orderXml)
+              system.log.info(s"Executed method 'nodeSeqToOrder(orderXml)' to unmarshall nodeSeq to an Order => $order")
+              complete {
+                StatusCodes.OK -> s"Accepted the order: ${order.name}"
+              }
+          }
+        }
+      } ~
     get{
       pathPrefix("item" / LongNumber){ id =>
         system.log.info(s"doing a get for $id")
